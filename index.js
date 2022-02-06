@@ -100,6 +100,10 @@ handlers.notFound = function(data, callback){
 
 // defining and requiring a router
 let ping = require('./Routes/ping') 
+let toi_briefs = require('./Routes/toi_briefs') 
+let wion_india = require('./Routes/wion_india') 
 var router = {
   'ping' : ping,
+  'toi_briefs' : toi_briefs,
+  'wion_india' : wion_india,
 }
