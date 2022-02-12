@@ -1,11 +1,17 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 
-// const url = 'https://timesofindia.indiatimes.com/briefs';
-const url = 'https://timesofindia.indiatimes.com/briefs/india';
+
+const today = require('../today');
+const timestamp = require('../time')
+
+const db = require('../firebase_connect');
+
+const url = 'https://timesofindia.indiatimes.com/briefs';
+// const url = 'https://timesofindia.indiatimes.com/briefs/india';
 
 
-var toi_briefs = function(data, callback){
+var toi_briefs =function(data, callback){
     let resPayload = {};
 
     rp(url)
@@ -13,6 +19,8 @@ var toi_briefs = function(data, callback){
         const $ = cheerio.load(html);
         let result_ = $('.brief_box');
         resPayload.html = [];
+
+        console.log(timestamp);
         
         $(result_).each(function(i, element){
             let src = 'The Times Of India';
@@ -22,12 +30,18 @@ var toi_briefs = function(data, callback){
             let details = $(element).children('p').children('a').html();
             let news_link = 'https://timesofindia.indiatimes.com' + $(element).children('a').attr('href');
             // let fillhtml = $(link).html();
-            if(title != ''){ resPayload.html.push({src,title,details,image,news_link}) };
+            if(title != ''){ 
+                resPayload.html.push({src,title,details,image,news_link}) 
+
+                db.collection(today+'-world').doc(title)
+                .set({src,title,details,image,news_link,timestamp})
+                .then(()=>{})
+            };
             
-            // console.log($(link).children('h2').text());
+            
         })
 
-        callback(200, resPayload);
+        callback(200, {'status':'success'});
     })
     .catch(function(err){
         // handle error

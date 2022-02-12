@@ -1,9 +1,12 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 
-// const url = 'https://timesofindia.indiatimes.com/briefs';
-const url = 'https://www.wionews.com/india-news?page=1';
+const today = require('../today');
+const timestamp = require('../time')
 
+const db = require('../firebase_connect');
+
+const url = 'https://www.wionews.com/india-news?page=1';
 
 var wion_india = function(data, callback){
     let resPayload = {};
@@ -21,10 +24,16 @@ var wion_india = function(data, callback){
             let image = $(element).find('.img-place-holder>img').attr('src');
             let news_link = 'https://www.wionews.com' + $(element).find('.img-holder>a').attr('href');
             // let fillhtml = $(element).html();
-            if(title != ''){ resPayload.html.push({title,details,image,news_link,src}) };
+            if(title != ''){ 
+                resPayload.html.push({title,details,image,news_link,src}) 
+                
+                db.collection(today+'-india').doc(title)
+                .set({src,title,details,image,news_link,timestamp})
+                .then(()=>{})
+            };
         })
 
-        callback(200, resPayload);
+        callback(200, {'status':'success'});
     })
     .catch(function(err){
         // handle error
