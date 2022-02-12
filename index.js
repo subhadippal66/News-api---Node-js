@@ -10,7 +10,10 @@ const config =  require('./config');
 var httpServer = http.createServer(function (req, res) {
   unifiedServer(req, res);
 });
-httpServer.listen(config.httpPort, function () {
+
+const port = process.env.PORT || 5000;
+
+httpServer.listen(port, function () {
   console.log(`listening on port ${config.httpPort} and ${config.envName} mode`);
 });
 
